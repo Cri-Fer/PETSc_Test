@@ -1,0 +1,13 @@
+# file temporanei
+*.o
+*.out
+*.exe
+*.log
+*.json
+
+# cartelle 
+.vscode/
+petsc/
+
+# file PETSc
+*.petsc
