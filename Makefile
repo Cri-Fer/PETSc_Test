@@ -25,3 +25,12 @@ clean:
 deps:
 	@echo ">> Installazione della libreria PETSc"
 	git clone -b release https://gitlab.com/petsc/petsc.git petsc
+	cd petsc && ./configure \
+  	--with-cc=mpicc \
+  	--with-cxx=mpicxx \
+  	--with-fc=mpif90 \
+  	--download-fblaslapack \
+  	--with-debugging=0
+	cd petsc && make all all -j$(nproc)
+	cd petsc && make check
+
