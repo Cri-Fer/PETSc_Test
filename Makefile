@@ -5,10 +5,10 @@ CXX = mpicxx
 SRC = main.cpp
 OUT = main.exe
 
-.PHONY: deps build run
-
 INCLUDES = -I$(PETSC_DIR)/include -I$(PETSC_DIR)/$(PETSC_ARCH)/include
 LIBS     = -L$(PETSC_DIR)/$(PETSC_ARCH)/lib -lpetsc -Wl,-rpath=$(PETSC_DIR)/$(PETSC_ARCH)/lib
+
+.PHONY: deps build run clean
 
 build: deps
 	@echo ">> Installazione completata"
@@ -24,13 +24,18 @@ clean:
 
 deps:
 	@echo ">> Installazione della libreria PETSc"
-	git clone -b release https://gitlab.com/petsc/petsc.git petsc
-	cd petsc && ./configure \
-  	--with-cc=mpicc \
-  	--with-cxx=mpicxx \
-  	--with-fc=mpif90 \
-  	--download-fblaslapack \
-  	--with-debugging=0
-	cd petsc && make all all -j$(nproc)
-	cd petsc && make check
-
+	@if [ ! -d "$(PETSC_DIR)" ]; then \
+		echo ">> Clonazione di PETSc..."; \
+		git clone -b release https://gitlab.com/petsc/petsc.git $(PETSC_DIR); \
+	fi
+	@echo ">> Configurazione e compilazione di PETSc..."
+	cd $(PETSC_DIR) && ./configure \
+	  --with-cc=mpicc \
+	  --with-cxx=mpicxx \
+	  --with-fc=mpif90 \
+	  --download-fblaslapack \
+	  --with-debugging=0 \
+	  PETSC_ARCH=$(PETSC_ARCH)
+	cd $(PETSC_DIR) && make all PETSC_ARCH=$(PETSC_ARCH) -j$(shell nproc)
+	cd $(PETSC_DIR) && make check PETSC_ARCH=$(PETSC_ARCH)
+	@echo ">> PETSc installato correttamente!"
