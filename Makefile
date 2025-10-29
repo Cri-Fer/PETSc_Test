@@ -23,6 +23,7 @@ clean:
 	rm -f $(OUT)
 
 deps:
+	mkdir -p $(PETSC_DIR)
 	@echo ">> Installazione della libreria PETSc"
 	@if [ ! -d "$(PETSC_DIR)" ]; then \
 		echo ">> Clonazione di PETSc..."; \
@@ -38,4 +39,4 @@ deps:
 	  PETSC_ARCH=$(PETSC_ARCH)
 	cd $(PETSC_DIR) && make all PETSC_ARCH=$(PETSC_ARCH) -j$(shell nproc)
 	cd $(PETSC_DIR) && make check PETSC_ARCH=$(PETSC_ARCH)
-	@echo ">> PETSc installato correttamente!"
+	@echo ">> PETSc installato correttamente! ✅"
