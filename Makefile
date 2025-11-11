@@ -1,5 +1,5 @@
-PETSC_DIR ?= petsc
-PETSC_ARCH ?= arch-linux-opt
+PETSC_DIR = $(CURDIR)/petsc
+PETSC_ARCH = arch-linux-opt
 
 CXX = mpicxx
 SRC = main.cpp
@@ -7,6 +7,7 @@ OUT = main.exe
 
 INCLUDES = -I$(PETSC_DIR)/include -I$(PETSC_DIR)/$(PETSC_ARCH)/include
 LIBS     = -L$(PETSC_DIR)/$(PETSC_ARCH)/lib -lpetsc -Wl,-rpath=$(PETSC_DIR)/$(PETSC_ARCH)/lib
+
 
 .PHONY: deps build run clean
 
@@ -26,7 +27,7 @@ deps:
 	@echo ">> Verifica installazione PETSc..."
 	@if [ ! -d "$(PETSC_DIR)/.git" ]; then \
 		echo ">> Clonazione di PETSc..."; \
-		git clone -b release https://gitlab.com/petsc/petsc.git $(PETSC_DIR); \
+		git clone -b release https://gitlab.com/petsc/petsc.git "$(PETSC_DIR)"; \
 	fi
 	@echo ">> Configurazione e compilazione di PETSc..."
 	cd $(PETSC_DIR) && ./configure \
