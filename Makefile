@@ -10,8 +10,8 @@ LIBS     = -L$(PETSC_DIR)/$(PETSC_ARCH)/lib -lpetsc -Wl,-rpath=$(PETSC_DIR)/$(PE
 
 .PHONY: deps build run clean
 
-build: deps
-	@echo ">> Installazione completata"
+build: deps $(OUT)
+	@echo ">> Compilazione completata ✅"
 
 $(OUT): $(SRC)
 	$(CXX) $(SRC) -o $(OUT) $(INCLUDES) $(LIBS)
@@ -23,9 +23,8 @@ clean:
 	rm -f $(OUT)
 
 deps:
-	mkdir -p $(PETSC_DIR)
-	@echo ">> Installazione della libreria PETSc"
-	@if [ ! -d "$(PETSC_DIR)" ]; then \
+	@echo ">> Verifica installazione PETSc..."
+	@if [ ! -d "$(PETSC_DIR)/.git" ]; then \
 		echo ">> Clonazione di PETSc..."; \
 		git clone -b release https://gitlab.com/petsc/petsc.git $(PETSC_DIR); \
 	fi
