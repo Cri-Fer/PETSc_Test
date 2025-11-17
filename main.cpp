@@ -3,7 +3,7 @@
 
 /*
 Questo codice usa le matrici estrapolate da Matlab e fa il calcolo. Controlla che il calcolo sia corretto
-In forno ci sono le varie norme di quanto i vari valori si discostano dalla soluzione di matlab e la exact solution
+In fondo ci sono le varie norme di quanto i vari valori si discostano dalla soluzione di matlab e la exact solution
 */
 
 int main(int argc, char **argv) {
@@ -18,7 +18,7 @@ int main(int argc, char **argv) {
 
     // Open and load the matrix
     PetscViewer viewerA;
-    PetscViewerBinaryOpen(PETSC_COMM_WORLD, "Files/matrix_A.dat", FILE_MODE_READ, &viewerA);
+    PetscViewerBinaryOpen(PETSC_COMM_WORLD, "FilesLap/matrix_A.dat", FILE_MODE_READ, &viewerA);
 
     MatCreate(PETSC_COMM_WORLD, &A);       // <--- CREA IL CONTENITORE PRIMA
     MatLoad(A, viewerA);                   // <--- POI CARICA I DATI
@@ -26,21 +26,21 @@ int main(int argc, char **argv) {
 
     // Open and load the vector
     PetscViewer viewerB;
-    PetscViewerBinaryOpen(PETSC_COMM_WORLD, "Files/vector_b.dat", FILE_MODE_READ, &viewerB);
+    PetscViewerBinaryOpen(PETSC_COMM_WORLD, "FilesLap/vector_b.dat", FILE_MODE_READ, &viewerB);
 
     VecCreate(PETSC_COMM_WORLD, &b);       // <--- CREA IL CONTENITORE PRIMA
     VecLoad(b, viewerB);
     PetscViewerDestroy(&viewerB);
 
     PetscViewer viewerC;
-    PetscViewerBinaryOpen(PETSC_COMM_WORLD, "Files/vector_uhm.dat", FILE_MODE_READ, &viewerC);
+    PetscViewerBinaryOpen(PETSC_COMM_WORLD, "FilesLap/vector_uhm.dat", FILE_MODE_READ, &viewerC);
 
     VecCreate(PETSC_COMM_WORLD, &uhm);       // <--- CREA IL CONTENITORE PRIMA
     VecLoad(uhm, viewerC);
     PetscViewerDestroy(&viewerC);
 
     PetscViewer viewerD;
-    PetscViewerBinaryOpen(PETSC_COMM_WORLD, "Files/vector_uex.dat", FILE_MODE_READ, &viewerD);
+    PetscViewerBinaryOpen(PETSC_COMM_WORLD, "FilesLap/vector_uex.dat", FILE_MODE_READ, &viewerD);
 
     VecCreate(PETSC_COMM_WORLD, &uex);       // <--- CREA IL CONTENITORE PRIMA
     VecLoad(uex, viewerD);
@@ -67,12 +67,14 @@ int main(int argc, char **argv) {
     KSPSetOperators(ksp, A, A);
     KSPSetTolerances(ksp, -1.0, 1e-10, PETSC_DEFAULT, PETSC_DEFAULT);
     KSPSetFromOptions(ksp);
-    KSPSetType(ksp, KSPGMRES);
+    KSPSetType(ksp, KSPCG); //gradiente coniugato come solver
 
     PC pc;
     KSPGetPC(ksp, &pc); // Dice "lega il precond di ksp a pc"
-    PCSetType(pc, PCLU); // Setta il precondizionatore a PCLU
+    //PCSetType(pc, PCGAMG); // Setta il precondizionatore a default AMG
     //KSPView(ksp, PETSC_VIEWER_STDOUT_WORLD); // dettagli del Krilov method
+    PCSetType(pc, PCHYPRE);
+    PCHYPRESetType(pc, "boomeramg");  // Precond: AMG Hypre
     KSPSolve(ksp, b, uh);
 
     PetscReal rnorm;

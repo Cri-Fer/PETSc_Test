@@ -31,12 +31,13 @@ deps:
 	fi
 	@echo ">> Configurazione e compilazione di PETSc..."
 	cd $(PETSC_DIR) && ./configure \
-	  --with-cc=mpicc \
-	  --with-cxx=mpicxx \
-	  --with-fc=mpif90 \
-	  --download-fblaslapack \
-	  --with-debugging=0 \
-	  PETSC_ARCH=$(PETSC_ARCH)
+	--with-cc=mpicc \
+	--with-cxx=mpicxx \
+	--with-fc=mpif90 \
+	--download-fblaslapack=1 \
+	--download-hypre=1 \
+	--with-debugging=0 \
+	PETSC_ARCH=$(PETSC_ARCH)
 	cd $(PETSC_DIR) && make all PETSC_ARCH=$(PETSC_ARCH) -j$(shell nproc)
 	cd $(PETSC_DIR) && make check PETSC_ARCH=$(PETSC_ARCH)
 	@echo ">> PETSc installato correttamente! ✅"
